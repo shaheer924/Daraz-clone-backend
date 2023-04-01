@@ -31,7 +31,7 @@ class App {
     }
 
     private initializeDatabase() {
-        mongoose.connect('mongodb://0.0.0.0:27017/ecommerce-webapp').then(resp => {
+        mongoose.connect("mongodb://mongo:NyM2B5Pv2zrRy8Q9IIdT@containers-us-west-204.railway.app:5632").then(resp => {
             console.log('Database is connected successfully')
         }).catch(err=>{
             console.log(err)
