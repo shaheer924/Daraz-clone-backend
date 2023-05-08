@@ -1,14 +1,19 @@
+import ApiFeatures from "../utils/ApiFeatures";
+
 class BaseRepos {
     public model: any
+
     constructor(model: any) {
         this.model = model
     }
 
-    index = (query: any) => {
-        return this.model.find(query)
+    index = async (query: any) => {
+        let data = new ApiFeatures(this.model.find(), query).filter()
+        console.log(data)
+        return data
     }
 
-    store = async (data: any ) => {
+    store = async (data: any) => {
         return this.model.create(data)
     }
 
@@ -16,7 +21,7 @@ class BaseRepos {
         return this.model.findById(id)
     }
 
-    update = async (id: string, data:  any) => {
+    update = async (id: string, data: any) => {
         return this.model.update({_id: id}, data)
     }
 

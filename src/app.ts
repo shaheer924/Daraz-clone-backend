@@ -4,18 +4,31 @@ import morgan from 'morgan'
 import router from "./router/router";
 import mongoose from "mongoose";
 import ErrorHandler from "./middleware/ErrorHandler";
+import {
+    scrapeDummyStoreData,
+    scrapeFakeStoreApi,
+    scrapeStoreRestApi,
+    StoreDataInDB
+} from "./utils/scrape-data/controller";
+
+
+import cron from 'node-cron'
+import FetchProduct from "./utils/scrape-data/Models/FetchProduct";
 
 class App {
     public app: any;
     port: any
-    constructor(port: any) {
+    mongodb_url: string
+    constructor(port: any, mongodb_url: any) {
         this.app = express()
         this.port = port
+        this.mongodb_url = mongodb_url
 
         this.initializeMiddleware()
         this.initializeRoute()
         this.initializeDatabase()
         this.initializeErrorHandler()
+        this.initializeCronJob().then(async (r) => StoreDataInDB())
     }
 
     private initializeMiddleware(){
@@ -31,11 +44,30 @@ class App {
     }
 
     private initializeDatabase() {
-        mongoose.connect("mongodb://mongo:NyM2B5Pv2zrRy8Q9IIdT@containers-us-west-204.railway.app:5632").then(resp => {
+        mongoose.connect(this.mongodb_url).then(resp => {
             console.log('Database is connected successfully')
         }).catch(err=>{
             console.log(err)
         })
+    }
+
+    async initializeCronJob () {
+        // cron.schedule('* * * * * *', () => {
+        //     scrapeDummyStoreData().then(r => {console.log("Data scraped successfully")}).catch(err=> {
+        //         console.log(err)
+        //
+        //     })
+        // })
+        let products = await FetchProduct.find()
+        if(products.length<1) {
+            scrapeDummyStoreData().then(r => {
+                console.log("Data scrape successfully ---> DummyJSON")
+            })
+            scrapeFakeStoreApi().then(r=> {
+                console.log("Data scrape successfully ---> FakeStore")
+            })
+            scrapeStoreRestApi().then(r=> console.log("Data scrape successfully ---> StoreRestApi"))
+        }
     }
 
     private initializeErrorHandler () {
