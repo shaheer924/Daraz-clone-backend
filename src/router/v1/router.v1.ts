@@ -34,7 +34,8 @@ Route.post('/user/verify-otp', UserController.verifyOtp)
 Route.post('/user/forgot-password', UserController.forgotPassword)
 Route.post('/user/reset-password/:reset_token', UserController.reset_password)
 
-Route.post('/product/create-product', uploads.array('image'),ProductController.createProduct)
+Route.post('/product/create-product',ProductController.createProduct)
+Route.get('/products',ProductController.getProducts)
 
 Route.use(AuthenticationMiddleware)
 Route.get('/users', UserController.index)

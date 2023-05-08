@@ -1,4 +1,5 @@
 import {Request, Response} from "express";
+import ApiFeatures from "../utils/ApiFeatures";
 
 class BaseController {
     public repos: any
@@ -7,14 +8,27 @@ class BaseController {
     }
 
     index = async (req: Request, res: Response) => {
+        console.log("here")
         try {
-            const users = await this.repos.index(req.query)
-            let meta = {
-                total: users.length,
-                page: 1,
-                per_page: 10
+            let page: any = req.query.page || 1
+            let limit: any = req.query.limit || 10
+
+            const data = await this.repos.model.aggregate([
+                {"$limit": limit},
+                {"skip": ( page - 1) * limit},
+
+            ])
+
+            let responseBody = {
+                meta: {
+                    totalRecords: data.length,
+                    perPage: limit,
+                    currentPage: page,
+                    totalPages: Math.ceil(data.length / limit)
+                },
+                data: data
             }
-            this.apiResponse('record fetched successfully', 200, res, users, meta)
+            this.apiResponse('record fetched successfully', 200, res, responseBody)
         } catch (e) {
             
         }

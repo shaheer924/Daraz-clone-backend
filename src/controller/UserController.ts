@@ -3,7 +3,7 @@ import UserRepos from "../repos/UserRepos";
 import {NextFunction, Request, Response} from "express";
 import AppError from "../utils/AppError";
 import Email from "../utils/Email";
-import App from "../app";
+import {registerUser, loginUser} from '../validations/AuthenticationValidation'
 
 class UserController extends BaseController {
     constructor() {
@@ -12,9 +12,9 @@ class UserController extends BaseController {
 
     register = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const data = req.body
+            const data = await registerUser.validateAsync(req.body)
 
-            const check_user = await UserRepos.model.findOne({email: data.email})
+            const check_user = await UserRepos.model.findOne({email: data?.email})
 
             if(check_user) return next(new AppError('user with the given email already exist',400))
 
@@ -22,13 +22,16 @@ class UserController extends BaseController {
 
             return this.apiResponse('User registered successfully', 200, res, user)
         } catch (e) {
-            return next(new AppError(JSON.stringify(e), 500))
+            console.log(e)
+            return next(new AppError(JSON.stringify(e), 500, e))
         }
     }
 
     login = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const {email, password} = req.body
+            // @ts-ignore
+            const {email, password} = await loginUser.validateAsync(req.body)
+
             const user = await UserRepos.model.findOne({ email: email})
 
             if(!user) {
