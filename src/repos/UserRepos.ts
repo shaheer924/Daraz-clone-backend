@@ -9,8 +9,8 @@ class UserRepos extends BaseRepos {
     }
 
     signToken = (id: string) => {
-        return jwt.sign({id},'secret',{
-            expiresIn: '1m'
+        return jwt.sign({id},'I am happy with my job and life my laptop',{
+            expiresIn: '1d'
         })
     }
 

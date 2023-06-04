@@ -79,16 +79,12 @@ userSchema.methods.correct_password = async function (candidate_password: string
 }
 
 userSchema.methods.create_password_reset_token = function () {
-    console.log("runnning")
     let resetToken = crypto.randomBytes(32).toString('hex')
-
-    this.password_reset_token = crypto.createHash('sha256').update(resetToken).digest('hex')
-
+    resetToken = crypto.createHash('sha256').update(resetToken).digest('hex')
+    this.password_reset_token = resetToken
     this.password_reset_expires = Date.now() + 10*60*1000
 
-
     console.log(this.password_reset_token)
-
     return resetToken
 }
 

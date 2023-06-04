@@ -52,12 +52,6 @@ class App {
     }
 
     async initializeCronJob () {
-        // cron.schedule('* * * * * *', () => {
-        //     scrapeDummyStoreData().then(r => {console.log("Data scraped successfully")}).catch(err=> {
-        //         console.log(err)
-        //
-        //     })
-        // })
         let products = await FetchProduct.find()
         if(products.length<1) {
             scrapeDummyStoreData().then(r => {

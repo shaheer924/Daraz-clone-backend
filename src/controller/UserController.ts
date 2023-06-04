@@ -156,7 +156,7 @@ class UserController extends BaseController {
         try {
             const {reset_token} = req.params
 
-            const user = await UserRepos.model.findOne({password_reset_token: reset_token, password_reset_expires: {$gte: Date.now()}})
+            const user = await UserRepos.model.findOne({password_reset_token: reset_token})
 
 
             if(!user) return next(new AppError('password reset time expired',400))
