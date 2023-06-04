@@ -11,6 +11,11 @@ const AuthenticationMiddleware = async (req: Request, res: Response, next: NextF
         }
         // @ts-ignore
         let decoded = jwt.decode(token)
+        // @ts-ignore
+        const expireAt = Math.floor(decoded.exp)
+        let time = new Date()
+        const currentTime =  Math.floor(time.getTime()/1000)
+        if(currentTime > expireAt) return next(new AppError('JWT token expired', 401))
 
         let user = await UserRepos.model.findOne({_id: decoded?.id})
         if(!user){

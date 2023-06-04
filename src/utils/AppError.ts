@@ -9,7 +9,6 @@ class AppError extends Error {
         this.errorObj = errorObj
 
         Error.captureStackTrace(this, this.constructor)
-
     }
 }
 

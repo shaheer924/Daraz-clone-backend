@@ -4,6 +4,8 @@ import UserController from "../../controller/UserController";
 import AuthenticationMiddleware from "../../middleware/AuthenticationMiddleware";
 import multer from 'multer'
 import ProductController from "../../controller/ProductController";
+import ReviewController from "../../controller/ReviewController";
+import CartController from "../../controller/CartController";
 
 const storage = multer.diskStorage({
     destination: function (req: Request, file,cb) {
@@ -35,11 +37,18 @@ Route.post('/user/forgot-password', UserController.forgotPassword)
 Route.post('/user/reset-password/:reset_token', UserController.reset_password)
 
 Route.post('/product/create-product',ProductController.createProduct)
-Route.get('/products',ProductController.getProducts)
 
+Route.post('/cart/add-to-cart', CartController.addToCart)
 Route.use(AuthenticationMiddleware)
 Route.get('/users', UserController.index)
 Route.post('/user/change-password',UserController.changePassword)
 Route.delete('/user/:id', UserController.unActiveUser)
+
+Route.get('/products',ProductController.getProducts)
+Route.get('/product/:id',ProductController.show)
+Route.get('/products/discounted-products', ProductController.getDiscountedProducts)
+
+Route.post("/reviews/create-reviews", ReviewController.store)
+Route.get("/reviews/get-reviews-by-product", ReviewController.getReviewsByProduct)
 
 export default Route

@@ -10,12 +10,8 @@ const ErrorHandler = (err: Error, req: Request, res: Response, next: NextFunctio
     let statusCode = err.statusCode || 500
     let message = err.message
 
-
     let error = {...err}
     error.message = message
-
-    console.log(error)
-
     res.status(statusCode).json({
         message: err.message,
         success: false,

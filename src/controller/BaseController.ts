@@ -1,5 +1,5 @@
-import {Request, Response} from "express";
-import ApiFeatures from "../utils/ApiFeatures";
+import {NextFunction, Request, Response} from "express";
+import AppError from "../utils/AppError";
 
 class BaseController {
     public repos: any
@@ -7,8 +7,7 @@ class BaseController {
         this.repos = repos
     }
 
-    index = async (req: Request, res: Response) => {
-        console.log("here")
+    index = async (req: Request, res: Response, next: NextFunction) => {
         try {
             let page: any = req.query.page || 1
             let limit: any = req.query.limit || 10
@@ -29,21 +28,40 @@ class BaseController {
                 data: data
             }
             this.apiResponse('record fetched successfully', 200, res, responseBody)
-        } catch (e) {
-            
+        } catch (err) {
+            return next(new AppError('Something went wrong please try again', 500, err))
         }
 
     }
 
-    store = async (req: Request, res: Response) => {
+    store = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            if(!req.body) return next(new AppError("Please provide data", 400))
+            let data = await this.repos.model.create(req.body)
+            this.apiResponse("Record created successfully", 201, res, data)
+        } catch (e) {
+            return next(new AppError("Something went wrong please try again", 500, e))
+        }
     }
 
-    storeMany = (req: Request, res: Response) => {
-
+    storeMany = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            if(!req.body) return next(new AppError("Please provide data", 400))
+            let data = await this.repos.model.create(req.body)
+            this.apiResponse("Record created successfully", 201, res, data)
+        } catch (e) {
+            return next(new AppError("Something went wrong please try again", 500, e))
+        }
     }
 
-    show = (req: Request, res: Response) => {
-
+    show = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            let data = await this.repos.show(req.params.id)
+            if(!data) return next(new AppError('No product found', 404))
+            this.apiResponse('record fetched successfully', 200, res, data)
+        } catch (err) {
+            return next(new AppError('Something went wrong please try again', 500, err))
+        }
     }
 
     update = (req: Request, res: Response) => {
